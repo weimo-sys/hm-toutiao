@@ -39,7 +39,7 @@ const routes = [
     ]
   },
   { path: '/user/profile', component: Profile },
-  { path: '/user/chcart', component: Chat },
+  { path: '/user/chat', component: Chat },
   { path: '/login', component: Login },
   { path: '/search', component: Search },
   { path: '/search/result', component: Result },
