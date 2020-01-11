@@ -1,5 +1,5 @@
 <template>
-  <div>搜索</div>
+  <div>登录组件</div>
 </template>
 
 <script>
