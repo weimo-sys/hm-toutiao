@@ -17,7 +17,8 @@ export default new Vuex.Store({
     }
   },
   // 清空User
-  clearUser () {
+  clearUser (state) {
+    state.user = {}
     auth.delUser()
   },
   actions: {
