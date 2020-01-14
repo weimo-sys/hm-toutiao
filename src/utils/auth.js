@@ -1,4 +1,4 @@
-// 砖门处理用户信息的存储和删除 以及获取 放置在 localStorge
+// 专门处理用户信息的存储和删除 以及获取 放置在 localStorge
 const USER_TOKEN = 'heima-toutiao-m-91-token' // 这个key专门用来存储 用户信息
 // 设置用户的信息
 export function setUser (user) {

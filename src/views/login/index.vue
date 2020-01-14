@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { login } from '@/api/user'
+import { mapMutations } from 'vuex'
 export default {
   name: 'login',
   data () {
@@ -70,12 +72,23 @@ export default {
       return true
     },
     // 登录
-    login () {
+    async login () {
       if (this.checkMobile() && this.checkCode()) {
         // 都通过，表示前端校验通过 还要调用接口
-        console.log('校验成功')
+        // console.log('校验成功')
+        const data = await login(this.loginForm)// 获取接口结果
+        // console.log(data)
+        // this.$store.commit('updateUser', { user: data }) // 第一种方法
+        this.updateUser({ user: data }) // 更新用户信息
+        // 登录成功
+        this.$gnotify({ type: 'success', message: '通知内容' })
+        // 跳转
+        // 两种情况
+        let { redirectUrl } = this.$route.query
+        this.$router.push(redirectUrl || '/') // 短路表达式
       }
-    }
+    },
+    ...mapMutations(['updateUser'])
   }
 }
 </script>

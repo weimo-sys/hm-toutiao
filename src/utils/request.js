@@ -1,7 +1,7 @@
 // 封装 axios
 import axios from 'axios'
 import JSONBig from 'json-bigint'
-import store from '../store'
+import store from '@/store'
 import router from '@/router'
 
 // 创建一个axios实例
@@ -9,7 +9,9 @@ const instance = axios.create({
   // 设置baseUrl 和处理最大数字
   baseURL: 'http://ttapi.research.itcast.cn/app/v1_0',
   transformResponse: [function (data) {
+    // 或者 return data ? JSONBig.parse(data) : {}
     try {
+      // 先尝试转换，如果转换不成功，返回data
       return JSONBig.parse(data)
     } catch (error) {
       return data
@@ -17,14 +19,16 @@ const instance = axios.create({
   }]
 })
 
-// 请求拦截器
+// 请求拦截器（在发送请求之前做一些事情）
 instance.interceptors.request.use(function (config) {
-  // config 请求配置，相当于default
+// config就是请求的参数
   if (store.state.user.token) {
-    // 统一注入token
+    //   统一注入token
     config.headers['Authorization'] = `Bearer ${store.state.user.token}`
   }
+  return config
 }, function (error) {
+  // 返回失败
   return Promise.reject(error)
 })
 
@@ -36,10 +40,11 @@ instance.interceptors.response.use((response) => {
     return response.data
   }
 }, async (error) => {
+  // 处理token失效
   // 错误的时候 token容易失效 处理token失效问题
   if (error.response && error.response.status === 401) {
     let toPath = {
-      path: '/login', query: { redirectUrl: router.currentRouter.path }
+      path: '/login', query: { redirectUrl: router.currentRoute.path }
     }
     // token 失效，判断是否有refresh_token
     if (store.state.user.refresh_token) {
