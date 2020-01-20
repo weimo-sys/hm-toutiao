@@ -44,7 +44,15 @@ export default {
       upLoading: false, // 是否开启上拉加载
       finished: false, // 是否全部加载完成
       articles: [], // 定义一个数组来接收上拉加载的数据
-      refreshSuccessText: ''
+      refreshSuccessText: '', // 下拉成功显示的文本
+      timestamp: null // 定义一个时间戳，这个时间戳用来告诉服务器，现在要求什么样的事件数据
+    }
+  },
+  props: {
+    channel_id: {
+      required: true, // 要求props必传
+      type: Number, // 指定要传的props类型（String Number Boolean Function...）
+      default: null // 给props一个默认值
     }
   },
   methods: {
