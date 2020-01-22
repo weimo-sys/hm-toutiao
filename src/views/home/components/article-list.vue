@@ -7,18 +7,18 @@
         finished-text="人家也是有底线的......"
         @load="onLoad"
       >
-        <van-cell v-for="article in articles" :key="article">
+        <van-cell v-for="article in articles" :key="article.art_id.toString()">
           <div class="article_item">
-            <h3 class="van-ellipsis">PullRefresh下拉刷新PullRefresh下拉刷新下拉刷新下拉刷新</h3>
+            <h3 class="van-ellipsis"> {{ article.title }} </h3>
             <!-- 三张图片 -->
-            <div class="img_box">
-              <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-              <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-              <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+            <div class="img_box" v-if="article.cover.type === 3">
+              <van-image class="w33" fit="cover" :src="article.cover.images[0]" />
+              <van-image class="w33" fit="cover" :src="article.cover.images[1]" />
+              <van-image class="w33" fit="cover" :src="article.cover.images[2]" />
             </div>
             <!-- 一张图片 -->
-            <div class="img_box">
-              <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+            <div class="img_box" v-if="article.cover.type === 1">
+              <van-image class="w100" fit="cover" :src="article.cover.images[0]" />
             </div>
             <div class="info_box">
               <span>你像一阵风</span>
