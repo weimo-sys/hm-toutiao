@@ -36,6 +36,8 @@
 </template>
 
 <script>
+// 引入文章数据获取模块
+import { getArticles } from '@/api/article'
 export default {
   name: 'article-list',
   data () {
@@ -57,23 +59,35 @@ export default {
   },
   methods: {
     // 上拉加载
-    onLoad () {
-      // console.log('开始加载数据')
-      setTimeout(() => {
-        // 给数据设置一个上线，不超过50条
-        if (this.articles.length < 50) {
-          let arr = Array.from(
-            Array(10),
-            (value, index) => this.articles.length + index + 1
-          )
-          // ...是将arr解构成一个个元素
-          this.articles.push(...arr)
-          // 关闭状态
-          this.upLoading = false
-        } else {
-          this.finished = true
-        }
-      }, 1000)
+    async onLoad () {
+      // // console.log('开始加载数据')
+      // setTimeout(() => {
+      //   // 给数据设置一个上线，不超过50条
+      //   if (this.articles.length < 50) {
+      //     let arr = Array.from(
+      //       Array(10),
+      //       (value, index) => this.articles.length + index + 1
+      //     )
+      //     // ...是将arr解构成一个个元素
+      //     this.articles.push(...arr)
+      //     // 关闭状态
+      //     this.upLoading = false
+      //   } else {
+      //     this.finished = true
+      //   }
+      // }, 1000)
+
+      // 请求数据
+      const data = await getArticles({ channel_id: this.channel_id, timestamp: this.timestamp || Date.now() })
+      // 将数据添加到数组尾部
+      this.articles.push(...data.results)
+      // 判断历史时间戳，如果有，表示可以继续往下看，否则就不看
+      if (data.pre_timestamp) {
+        this.timestamp = data.pre_timestamp
+      } else {
+        // 如果没有历史，加载完成
+        this.finished = true
+      }
     },
 
     // 下拉刷新
