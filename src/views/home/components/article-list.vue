@@ -21,9 +21,9 @@
               <van-image class="w100" fit="cover" :src="article.cover.images[0]" />
             </div>
             <div class="info_box">
-              <span>你像一阵风</span>
-              <span>8评论</span>
-              <span>10分钟前</span>
+              <span>{{ article.aut_name }}</span>
+              <span>{{ article.comm_count }}评论</span>
+              <span>{{ article.pubdate }}</span>
               <span class="close">
                 <van-icon name="cross"></van-icon>
               </span>
@@ -81,6 +81,8 @@ export default {
       const data = await getArticles({ channel_id: this.channel_id, timestamp: this.timestamp || Date.now() })
       // 将数据添加到数组尾部
       this.articles.push(...data.results)
+      // 关闭加载状态
+      this.upLoading = false
       // 判断历史时间戳，如果有，表示可以继续往下看，否则就不看
       if (data.pre_timestamp) {
         this.timestamp = data.pre_timestamp
@@ -91,16 +93,35 @@ export default {
     },
 
     // 下拉刷新
-    onRefresh () {
-      setTimeout(() => {
-        // array.from 将伪数组转为真正的数组
-        let arr = Array.from(Array(10), (value, index) => '追加' + (index + 1))
-        // 将数据添加到首部
-        this.articles.unshift(...arr)
-        // 关闭状态
-        this.downLoading = false
-        this.refreshSuccessText = `更新了${arr.length}条数据`
-      }, 1000)
+    async onRefresh () {
+      // setTimeout(() => {
+      //   // array.from 将伪数组转为真正的数组
+      //   let arr = Array.from(Array(10), (value, index) => '追加' + (index + 1))
+      //   // 将数据添加到首部
+      //   this.articles.unshift(...arr)
+      //   // 关闭状态
+      //   this.downLoading = false
+      //   this.refreshSuccessText = `更新了${arr.length}条数据`
+      // }, 1000)
+      // 下拉获取新数据
+      let data = await getArticles({ channel_id: this.channel_id, timestamp: Date.now() })
+      // 关掉下拉状态
+      this.downLoading = false
+      // 如果没有最新推荐数据
+      if (data.results.length) {
+        // 如果长度>0 表示有数据
+        this.articles = data.results // 将历史数据全部覆盖掉
+        // 如果之前已经将上拉加载设置成finished设置成true
+        // 表示我们还需要继续往下拉 就需要把原来的状态打开
+        this.finished = false
+        // 下拉时还需要获取历史时间戳
+        this.timestamp = data.pre_timestamp // 赋值历史时间戳，因为当你下拉加载的时候，要用到这个历史时间戳
+        // 刷新完提示
+        this.refreshSuccessText = `更新了${data.results.length}条数据`
+      } else {
+        // 如果长度<0 表示没有新数据
+        this.refreshSuccessText = '已是最新数据'
+      }
     }
   }
 }
