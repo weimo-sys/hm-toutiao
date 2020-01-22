@@ -60,6 +60,7 @@ export default {
   methods: {
     // 上拉加载
     async onLoad () {
+      await this.$sleep() // 等待 sleep resolve
       // // console.log('开始加载数据')
       // setTimeout(() => {
       //   // 给数据设置一个上线，不超过50条
@@ -94,6 +95,7 @@ export default {
 
     // 下拉刷新
     async onRefresh () {
+      await this.$sleep() // 等待 sleep resolve
       // setTimeout(() => {
       //   // array.from 将伪数组转为真正的数组
       //   let arr = Array.from(Array(10), (value, index) => '追加' + (index + 1))
@@ -114,7 +116,7 @@ export default {
         // 如果之前已经将上拉加载设置成finished设置成true
         // 表示我们还需要继续往下拉 就需要把原来的状态打开
         this.finished = false
-        // 下拉时还需要获取历史时间戳
+        // 上拉时还需要获取历史时间戳
         this.timestamp = data.pre_timestamp // 赋值历史时间戳，因为当你下拉加载的时候，要用到这个历史时间戳
         // 刷新完提示
         this.refreshSuccessText = `更新了${data.results.length}条数据`
