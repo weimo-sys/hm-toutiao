@@ -3,16 +3,22 @@
     <van-tabs v-model="activeIndex" swipeable>
       <van-tab :title="channel.name" v-for="channel in channels" :key="channel.id">
         <!-- 这个div 设置了滚动条 -->
-        <article-list :channel_id="channel.id"></article-list>
+        <!-- 在父组件的子组件标签上写监听 -->
+        <article-list :channel_id="channel.id" @showAction="openMoreAction"></article-list>
       </van-tab>
     </van-tabs>
     <span class="bar_btn">
       <van-icon name="wap-nav" />
     </span>
+    <!-- 放置弹层组件 -->
+    <van-popup :style="{ width: '80%' }" v-model="showMoreAction">
+      <more-action></more-action>
+    </van-popup>
   </div>
 </template>
 
 <script>
+import MoreAction from './components/more-action'
 import ArticleList from './components/article-list'
 // 导入封装的请求模块
 import { getMyChannels } from '@/api/channels'
@@ -21,12 +27,15 @@ export default {
   data () {
     return {
       activeIndex: 0, // 默认启动第0个标签
-      channels: [] // 声明数组接收获取的频道信息
+      channels: [], // 声明数组接收获取的频道信息
+      showMoreAction: false, // 控制弹出层显示隐藏
+      articleId: null // 用来接收文章的id
     }
   },
   // 注册article-list
   components: {
-    ArticleList
+    ArticleList,
+    MoreAction
   },
   methods: {
     // 组件方法
@@ -34,6 +43,10 @@ export default {
       // 调用api方法，获取频道列表数据
       let data = await getMyChannels()
       this.channels = data.channels // 将获取的频道赋值给声明的变量
+    },
+    openMoreAction (artId) {
+      this.showMoreAction = true
+      this.articleId = artId
     }
   },
   created () {
@@ -59,13 +72,13 @@ export default {
       height: 2px;
     }
   }
-  /deep/ .van-tabs__content{
+  /deep/ .van-tabs__content {
     flex: 1;
     overflow: hidden;
   }
-  /deep/ .van-tab__pane{
+  /deep/ .van-tab__pane {
     height: 100%;
-    .scroll-wrapper{
+    .scroll-wrapper {
       height: 100%;
       overflow-y: auto;
     }

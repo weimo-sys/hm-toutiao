@@ -24,8 +24,8 @@
               <span>{{ article.aut_name }}</span>
               <span>{{ article.comm_count }}评论</span>
               <span>{{ article.pubdate | relTime }}</span>
-              <span class="close">
-                <van-icon name="cross"></van-icon>
+              <span class="close" v-if="user.token" @click="$emit('showAction', article.art_id.toString())">
+                <van-icon name="cross" ></van-icon>
               </span>
             </div>
           </div>
@@ -38,6 +38,8 @@
 <script>
 // 引入文章数据获取模块
 import { getArticles } from '@/api/article'
+// 引入
+import { mapState } from 'vuex'
 export default {
   name: 'article-list',
   data () {
@@ -56,6 +58,10 @@ export default {
       type: Number, // 指定要传的props类型（String Number Boolean Function...）
       default: null // 给props一个默认值
     }
+  },
+  // 映射vuex中的store对象到计算属性
+  computed: {
+    ...mapState(['user'])
   },
   methods: {
     // 上拉加载
