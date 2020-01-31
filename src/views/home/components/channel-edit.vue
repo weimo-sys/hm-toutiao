@@ -9,7 +9,7 @@
       </div>
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="(channel,i) in channels" :key="channel.id">
-          <span @click="$emit('selectChannel', channel.id)" class="f12">{{ channel.name }}</span>
+          <span :class="{red: i === activeIndex }" @click="$emit('selectChannel', channel.id)" class="f12">{{ channel.name }}</span>
           <template v-if="i!==0">
             <van-icon v-show="editing" class="btn" name="cross"></van-icon>
           </template>
@@ -42,6 +42,9 @@ export default {
       required: true,
       type: Array,
       default: () => []
+    },
+    activeIndex: {
+      type: Number // 接收频道激活索引
     }
   },
   computed: {
