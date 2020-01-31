@@ -7,7 +7,8 @@
         <article-list :channel_id="channel.id" @showAction="openMoreAction"></article-list>
       </van-tab>
     </van-tabs>
-    <span class="bar_btn">
+    <!-- 显示编辑频道的按钮 -->
+    <span class="bar_btn" @click="showChannelEdit = true">
       <van-icon name="wap-nav" />
     </span>
     <!-- 放置弹层组件 -->
@@ -17,6 +18,11 @@
       <!-- report事件中的第一个参数$event是more-action组件传出的type -->
       <more-action @dislike="dislikeOrReport($event, 'dislike')" @report="dislikeOrReport($event, 'report')"></more-action>
     </van-popup>
+    <!-- 编辑频道 -->
+    <van-action-sheet :round="false" v-model="showChannelEdit" title="编辑频道">
+      <!-- 放置编辑频道组件 -->
+      <channel-edit></channel-edit>
+    </van-action-sheet>
   </div>
 </template>
 
@@ -29,6 +35,7 @@ import { getMyChannels } from '@/api/channels'
 import { disLikeArticle, reportArticle } from '@/api/article'
 // 导入封装的eventBus 模块
 import eventBus from '@/utils/eventBus'
+import ChannelEdit from './components/channel-edit'
 export default {
   name: 'home', // devtools查看组件时  可以看到 对应的name名称
   data () {
@@ -36,13 +43,13 @@ export default {
       activeIndex: 0, // 默认启动第0个标签
       channels: [], // 声明数组接收获取的频道信息
       showMoreAction: false, // 控制弹出层显示隐藏
-      articleId: null // 用来接收文章的id
+      articleId: null, // 用来接收文章的id
+      showChannelEdit: false // 设置频道编辑的显示或者隐藏
     }
   },
   // 注册article-list
   components: {
-    ArticleList,
-    MoreAction
+    ArticleList, MoreAction, ChannelEdit
   },
   methods: {
     // 组件方法
@@ -157,6 +164,18 @@ export default {
     z-index: 1000;
     &::before {
       font-size: 20px;
+    }
+  }
+}
+// 编辑频道面板的样式
+.van-action-sheet {
+  max-height: 100%;
+  height: 100%;
+  .van-action-sheet__header {
+    background: #3296fa;
+    color: #fff;
+    .van-icon-close {
+      color: #fff;
     }
   }
 }
