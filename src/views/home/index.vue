@@ -12,7 +12,10 @@
     </span>
     <!-- 放置弹层组件 -->
     <van-popup :style="{ width: '80%' }" v-model="showMoreAction">
-      <more-action @dislike="dislike"></more-action>
+      <!-- $event是事件里携带的参数 -->
+      <!-- dislike事件中的第一个参数$event 是一个占位符 -->
+      <!-- report事件中的第一个参数$event是more-action组件传出的type -->
+      <more-action @dislike="dislikeOrReport($event, 'dislike')" @report="dislikeOrReport($event, 'report')"></more-action>
     </van-popup>
   </div>
 </template>
@@ -23,7 +26,7 @@ import ArticleList from './components/article-list'
 // 导入封装的请求模块
 import { getMyChannels } from '@/api/channels'
 // 导入封装的不喜欢模块
-import { disLikeArticle } from '@/api/article'
+import { disLikeArticle, reportArticle } from '@/api/article'
 // 导入封装的eventBus 模块
 import eventBus from '@/utils/eventBus'
 export default {
@@ -71,6 +74,26 @@ export default {
           type: 'danger',
           message: '操作失败'
         })
+      }
+    },
+    // 不喜欢或者举报
+    // params: 表示第一个参数(举报类型参数)
+    // operateType: 表示第二个参数.操作类型
+    async dislikeOrReport (params, operatetype) {
+      try {
+        if (this.articleId) {
+          operatetype === 'dislike' ? await disLikeArticle({
+            target: this.articleId
+          }) : await reportArticle({
+            target: this.articleId,
+            type: params
+          })
+          this.$gnotify({ type: 'success', message: '操作成功' })
+          eventBus.$emit('delArticle', this.articleId, this.channels[this.activeIndex].id)
+          this.showMoreAction = false
+        }
+      } catch (error) {
+        this.$gnotify({ type: 'danger', message: '操作失败' })
       }
     }
   },
