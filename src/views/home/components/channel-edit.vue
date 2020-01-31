@@ -9,9 +9,14 @@
       </div>
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="(channel,i) in channels" :key="channel.id">
+            <!-- 告诉父组件点击了哪个频道 -->
           <span :class="{red: i === activeIndex }" @click="$emit('selectChannel', channel.id)" class="f12">{{ channel.name }}</span>
+            <!-- 通过编辑状态来控制叉号图标的显示隐藏 -->
+            <!-- 先控制第一个推荐频道不允许删除 -->
           <template v-if="i!==0">
-            <van-icon v-show="editing" class="btn" name="cross"></van-icon>
+              <!-- 再根据状态决定是否显示删除叉号 -->
+              <!-- 告诉父组件 要删除哪个频道 传出频道id -->
+            <van-icon @click="$emit('delChannel', channel.id)" v-show="editing" class="btn" name="cross"></van-icon>
           </template>
         </van-grid-item>
       </van-grid>
