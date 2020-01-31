@@ -4,6 +4,7 @@ import store from '@/store'
 // 本地缓存需要key
 const CACHE_CHANNEL_T = 'hm-toutiao-t' // 游客缓存的key
 const CACHE_CHANNEL_U = 'hm-toutiao-u' // 登录用户的key
+
 // 获取我的频道
 export function getMyChannels () {
   // 返回一个promise对象
@@ -32,5 +33,24 @@ export function getMyChannels () {
 export function getAllChannels () {
   return request({
     url: '/channels'
+  })
+}
+
+// 删除频道
+export function delChannel (id) {
+  return new Promise(function (resolve, reject) {
+    // 判断删除游客的频道还是登录的频道
+    let key = store.state.user.token ? CACHE_CHANNEL_U : CACHE_CHANNEL_T // 用于缓存的key
+    let channels = JSON.parse(localStorage.getItem(key)) // 得到缓存结果
+    let index = channels.findIndex(item => item.id === id) // 找到对应频道的索引
+    if (index > -1) {
+      channels.splice(index, 1) // 直接删除原数组中的数据
+      // channels = channels.filter(item => item.id !== id) // 新数组模式删除频道
+      // 应该重新写入缓存
+      localStorage.setItem(key, JSON.stringify(channels)) // 重新写入缓存
+      resolve()
+    } else {
+      reject(new Error('找不到对应的频道'))
+    }
   })
 }
