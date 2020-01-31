@@ -21,7 +21,8 @@
     <!-- 编辑频道 -->
     <van-action-sheet :round="false" v-model="showChannelEdit" title="编辑频道">
       <!-- 放置编辑频道组件 -->
-      <channel-edit></channel-edit>
+      <!-- 父传子 -->
+      <channel-edit :channels="channels"></channel-edit>
     </van-action-sheet>
   </div>
 </template>

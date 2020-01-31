@@ -7,10 +7,17 @@
         <van-button v-if="!editing" @click="editing=true" size="mini" type="info" plain>编辑</van-button>
         <van-button v-else @click="editing=false" size="mini" type="danger" plain>完成</van-button>
       </div>
+      <!-- 可选频道 -->
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="index in 8" :key="index">
-          <span class="f12">频道{{index}}</span>
-          <van-icon class="btn" name="cross"></van-icon>
+        <van-grid-item v-for="(channel,i) in channels" :key="channel.id">
+          <span class="f12">{{channel.name}}</span>
+          <!-- 通过编辑状态来控制叉号图标的显示和隐藏 -->
+          <!-- 先控制第一个推荐频道不允许删除 -->
+          <template v-if="i!==0">
+              <!-- 再根据状态决定是否显示删除叉号 -->
+              <van-icon  v-show="editing" class="btn" name="cross"></van-icon>
+          </template>
+
         </van-grid-item>
       </van-grid>
     </div>
@@ -31,6 +38,13 @@ export default {
   data () {
     return {
       editing: false
+    }
+  },
+  props: {
+    channels: {
+      required: true,
+      type: Array,
+      default: () => []
     }
   }
 }
