@@ -9,3 +9,10 @@ export function getMyChannels () {
     // methods: 'get'   axios 默认get类型
   })
 }
+
+// 获取所有频道
+export function getAllChannels () {
+  return request({
+    url: '/channels'
+  })
+}

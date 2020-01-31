@@ -1,5 +1,5 @@
 <template>
-  <div class="channel-edit">
+ <div class="channel-edit">
     <div class="channel">
       <div class="tit">
         我的频道：
@@ -7,25 +7,20 @@
         <van-button v-if="!editing" @click="editing=true" size="mini" type="info" plain>编辑</van-button>
         <van-button v-else @click="editing=false" size="mini" type="danger" plain>完成</van-button>
       </div>
-      <!-- 可选频道 -->
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="(channel,i) in channels" :key="channel.id">
-          <span class="f12">{{channel.name}}</span>
-          <!-- 通过编辑状态来控制叉号图标的显示和隐藏 -->
-          <!-- 先控制第一个推荐频道不允许删除 -->
+        <van-grid-item v-for="(item,i) in channels" :key="item.id">
+          <span class="f12">{{ item.name }}</span>
           <template v-if="i!==0">
-              <!-- 再根据状态决定是否显示删除叉号 -->
-              <van-icon  v-show="editing" class="btn" name="cross"></van-icon>
+            <van-icon v-show="editing" class="btn" name="cross"></van-icon>
           </template>
-
         </van-grid-item>
       </van-grid>
     </div>
-    <div class="channel">
+       <div class="channel">
       <div class="tit">可选频道：</div>
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="index in 8" :key="index">
-          <span class="f12">频道{{index}}</span>
+        <van-grid-item v-for="channel in optionalChannels" :key="channel.id">
+          <span class="f12">{{ channel.name }}</span>
           <van-icon class="btn" name="plus"></van-icon>
         </van-grid-item>
       </van-grid>
@@ -34,10 +29,12 @@
 </template>
 
 <script>
+import { getAllChannels } from '@/api/channels'
 export default {
   data () {
     return {
-      editing: false
+      editing: false, // 是否正在编辑
+      allChannels: [] // 用来接收所有的频道
     }
   },
   props: {
@@ -46,6 +43,21 @@ export default {
       type: Array,
       default: () => []
     }
+  },
+  computed: {
+    // 可用频道 = 全部频道 - 我的频道
+    optionalChannels () {
+      return this.allChannels.filter(item => !this.channels.some(o => o.id === item.id))
+    }
+  },
+  methods: {
+    async getAllChannels () {
+      const data = await getAllChannels()
+      this.allChannels = data.channels // 给所有频道赋值
+    }
+  },
+  created () {
+    this.getAllChannels() // 获取所有频道
   }
 }
 </script>
