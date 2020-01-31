@@ -8,8 +8,8 @@
         <van-button v-else @click="editing=false" size="mini" type="danger" plain>完成</van-button>
       </div>
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="(item,i) in channels" :key="item.id">
-          <span class="f12">{{ item.name }}</span>
+        <van-grid-item v-for="(channel,i) in channels" :key="channel.id">
+          <span @click="$emit('selectChannel', channel.id)" class="f12">{{ channel.name }}</span>
           <template v-if="i!==0">
             <van-icon v-show="editing" class="btn" name="cross"></van-icon>
           </template>
