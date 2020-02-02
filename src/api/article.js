@@ -27,3 +27,11 @@ export function reportArticle (data) {
     method: 'post'
   })
 }
+
+// 搜索文章联想
+export function suggestion (params) {
+  return request({
+    url: '/suggestion',
+    params
+  })
+}
