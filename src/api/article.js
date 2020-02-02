@@ -35,3 +35,11 @@ export function suggestion (params) {
     params
   })
 }
+
+// 获取文章搜索的结果
+export function searchArticle (params) {
+  return request({
+    url: '/search',
+    params
+  })
+}
