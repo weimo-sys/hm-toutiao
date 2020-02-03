@@ -7,7 +7,9 @@
         finished-text="人家也是有底线的......"
         @load="onLoad"
       >
-        <van-cell v-for="article in articles" :key="article.art_id.toString()">
+      <!-- 点击van-cell跳转到文章详情 -->
+      <!-- query传值(?id=123) params传值(/123) -->
+        <van-cell :to="`/article?articleId=${article.art_id.toString()}`" v-for="article in articles" :key="article.art_id.toString()">
           <div class="article_item">
             <h3 class="van-ellipsis"> {{ article.title }} </h3>
             <!-- 三张图片 -->
@@ -23,8 +25,10 @@
             <div class="info_box">
               <span>{{ article.aut_name }}</span>
               <span>{{ article.comm_count }}评论</span>
+              <!-- 使用过滤器 表达式 | 过滤器名称 -->
               <span>{{ article.pubdate | relTime }}</span>
-              <span class="close" v-if="user.token" @click="$emit('showAction', article.art_id.toString())">
+              <!-- 点击叉号 告诉父组件 我要反馈 stop修饰符，阻止事件冒泡 -->
+              <span class="close" v-if="user.token" @click.stop="$emit('showAction', article.art_id.toString())">
                 <van-icon name="cross" ></van-icon>
               </span>
             </div>
