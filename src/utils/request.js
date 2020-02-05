@@ -44,7 +44,7 @@ instance.interceptors.response.use((response) => {
   // 错误的时候 token容易失效 处理token失效问题
   if (error.response && error.response.status === 401) {
     let toPath = {
-      path: '/login', query: { redirectUrl: router.currentRoute.path }
+      path: '/login', query: { redirectUrl: router.currentRoute.fullPath }
     }
     // token 失效，判断是否有refresh_token
     if (store.state.user.refresh_token) {
