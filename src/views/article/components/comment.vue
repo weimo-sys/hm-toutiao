@@ -1,4 +1,5 @@
 <template>
+  <!-- 评论列表 -->
   <div class="comment">
     <van-list v-model="loading" :finished="finished" @load="onLoad" finished-text="没有更多了">
       <div class="item van-hairline--bottom van-hairline--top" v-for="comment in comments" :key="comment.com_id.toString()">
@@ -20,7 +21,7 @@
           <p>{{ comment.content }}</p>
           <p>
             <span class="time">{{ comment.pubdate | relTime }}</span>&nbsp;
-            <van-tag plain @click="showReply=true">{{ comment.reply_count }} 回复</van-tag>
+            <van-tag plain @click="openReply()">{{ comment.reply_count }} 回复</van-tag>
           </p>
         </div>
       </div>
@@ -31,9 +32,21 @@
         <span class="submit" v-else slot="button">提交</span>
       </van-field>
     </div>
+  <!-- 回复列表 -->
+  <van-action-sheet :round="false" v-model="showReply" class="reply_dialog" title="回复评论">
+    <!-- 回复列表组件 -->
+    <van-list v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了">
+      <div class="item van-hairline--bottom van-hairline--top" v-for="index in 8" :key="index">
+          <van-image round width="1rem" height="1rem" fit="fill" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+          <div class="info">
+            <p><span class="name">一阵清风</span></p>
+            <p>评论的内容，。。。。</p>
+            <p><span class="time">两天内</span></p>
+          </div>
+        </div>
+    </van-list>
+  </van-action-sheet>
   </div>
-
-  <!-- 都不输入框 -->
 </template>
 
 <script>
@@ -50,10 +63,22 @@ export default {
       // 控制提交中状态数据
       submiting: false,
       comments: [], // 用来寻访评论列表的数据
-      offset: null // 表示分页一句 如果为空，表示从第一页开始
+      offset: null, // 表示分页一句 如果为空，表示从第一页开始
+      showReply: false, // 控制回复列表组件的显示和隐藏
+      reply: {
+        // 专门用reply这个对象存放回复次昂管的数据
+        loading: false, // 是回复列表组件的状态
+        finished: false, // 是回复列表组件的结束状态
+        offset: null, // 偏移量 获取评论的评论的分页依据 c
+        list: [] // 用于存放 当前弹出的关于某个评论的回复列表的数据
+      }
     }
   },
   methods: {
+    // 打开回复
+    openReply () {
+      this.showReply = true // 打开弹出框
+    },
     // 一级评论
     async  onLoad () {
     //  加载评论数据
@@ -121,6 +146,26 @@ export default {
   .submit {
     font-size: 12px;
     color: #3296fa;
+  }
+}
+// 回复列表的样式
+.reply_dialog {
+  height: 100%;
+  max-height: 100%;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  .van-action-sheet__header {
+    background: #3296fa;
+    color: #fff;
+    .van-icon-close {
+      color: #fff;
+    }
+  }
+  .van-action-sheet__content{
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 44px;
   }
 }
 </style>
