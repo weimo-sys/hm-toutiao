@@ -45,3 +45,12 @@ export function updateImg (data) {
     data
   })
 }
+
+// 保存用户的方法
+export function saveUserInfo (data) {
+  return request({
+    url: '/user/profile',
+    method: 'patch',
+    data
+  })
+}
