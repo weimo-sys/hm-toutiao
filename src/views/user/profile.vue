@@ -24,7 +24,7 @@
       <!-- 内容 -->
       <!-- 一：本地相册选择图片 -->
       <!-- 二：拍照 -->
-      <van-cell is-link title="本地相册选择图片"></van-cell>
+      <van-cell @click="openChangeFile" is-link title="本地相册选择图片"></van-cell>
       <van-cell is-link title="拍照"></van-cell>
     </van-popup>
 
@@ -54,12 +54,15 @@
         @confirm="confirmDate"
       />
     </van-popup>
+    <!-- 设置文件上传控件 但是不能让人看到 -->
+    <!-- input:file 中当选择文件就会触发  @change="upLoad"-->
+    <input ref="myFile" @change="upLoad" type="file" style="display:none">
   </div>
 </template>
 
 <script>
 import dayjs from 'dayjs' // 引入dayjs插件
-import { getUserProfile } from '@/api/user' // 引入获取资料的方法
+import { getUserProfile, updateImg } from '@/api/user' // 引入获取资料的方法
 export default {
   name: 'profile',
   data () {
@@ -116,6 +119,27 @@ export default {
       let data = await getUserProfile()
       // console.log(data)
       this.user = data // 将得到的数据赋值给user
+    },
+    // 点击事件 选择图片时触发
+    openChangeFile () {
+      // 上传本地文件
+      // 触发文件上传的点击事件
+      this.$refs.myFile.click() // 触发文件上传组件点击方法
+    },
+    // 当我们选择图片就会触发
+    async upLoad () {
+      // console.log('触发了')
+      // 应该上传头像
+      // console.log(this.$refs.myFile.files[0])
+      // 首先 应该把这个图片上传到服务器上
+      // 调用编辑头像的方法
+      let data = new FormData()
+      data.append('photo', this.$refs.myFile.files[0]) // 网formdata 添加参数
+      let result = await updateImg(data)
+      // console.log(result)
+      // 应该把地址 同步设置给 当前页面的数据
+      this.user.photo = result.photo // 将上传成功的头像设置给当前头像
+      this.showPhoto = false // 关闭弹层
     }
   },
   created () {

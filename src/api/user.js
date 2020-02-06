@@ -36,3 +36,12 @@ export function getUserProfile () {
     url: '/user/profile'
   })
 }
+
+// 封装编辑用户头像的api
+export function updateImg (data) {
+  return request({
+    url: '/user/photo', // 编辑头像的地址
+    method: 'patch',
+    data
+  })
+}
