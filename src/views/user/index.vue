@@ -45,7 +45,7 @@
 
 <script>
 import { getUserInfo } from '@/api/user'
-import { mapMutations } from 'vuex'
+import { mapMutations } from 'vuex' // 引入辅助函数
 export default {
   name: 'user',
   data () {
@@ -54,10 +54,12 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['clearUser']), // 映射vuex中的mutations方法
+    ...mapMutations(['clearUser', 'updatePhoto']), // 映射vuex中的mutations方法
     // 获取用户信息
     async getUserInfo () {
       this.userInfo = await getUserInfo() // 讲数据直接给当前的userInfo
+      // this.userInfo 个人资料信息 里面又头像
+      this.updatePhoto({ photo: this.userInfo.photo }) // 更新用户的头像
     },
     // 退出登录
     async lgout () {
