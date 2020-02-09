@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
-    <div class="chat-list">
+    <div class="chat-list" ref="myList">
        <!-- list的数据分两种 一种是小智同学说的 一种是我自己说的 -->
       <!-- 这个div 要展示两种场景 小智的场景 左边  我的场景 右边 -->
       <!-- 根据当前 name的值 决定 样式 是left 还是right  -->
@@ -16,8 +16,10 @@
       </div>
     </div>
     <div class="reply-container van-hairline--top">
-      <van-field v-model="value" placeholder="说点什么...">
-        <van-loading v-if="Loading" slot="button" type="spinner" size="16px"></van-loading>
+      <van-field v-model.trim="value" placeholder="说点什么...">
+        <!-- v-if="Loading" 进度条的目的是： 控制用户输入内容的频率 -->
+        <van-loading v-if="loading" slot="button" type="spinner" size="16px"></van-loading>
+        <!-- 点击发送 给小智发消息 -->
         <span v-else @click="send()" slot="button" style="font-size:12px;color:#999">提交</span>
       </van-field>
     </div>
@@ -32,15 +34,43 @@ export default {
   name: 'chat',
   data () {
     return {
-      value: '',
-      Loading: false,
+      value: '', // 用来绑定用户的谈话内容
+      loading: false,
       XZImg,
       list: [] // 存放聊天记录
     }
   },
   methods: {
-    send () {
-
+    // 滚动到底部
+    scrollBottom () {
+      // 需要通过获取滚动条高度 和设置滚动条距离来滚动
+      // 滚动条的位置是通过什么属性来控制的
+      // scrollTop 滚动条位置距离顶部距离属性来控制
+      // 想要保证方法执行的时候 数据的试图已经更新完毕
+      this.$nextTick(() => {
+        // 可以保证在滚动的时候
+        this.$refs.myList.scrollTop = this.$refs.myList.scrollHeight
+      })
+    },
+    async send () {
+      // 获取要发送的内容
+      if (!this.value) return false // 如果为空 就直接返回
+      this.loading = true // 先打开加载状态
+      // 设置一下事件间隔
+      await this.$sleep() // 默认事件为500ms
+      // 如果不为空
+      // emit 发送消息 on 接收消息
+      let obj = {
+        msg: this.value, // 消息内容
+        timestmp: Date.now() // 时间戳 当前时间
+      }
+      // 发送消息
+      this.socket.emit('message', obj) // 发送消息
+      // 应该把刚发送的消息 添加到消息列表
+      this.list.push(obj)
+      this.value = '' // 清空输入框的消息
+      this.loading = false // 回复状态
+      this.scrollBottom() // 消息发送完毕 滚动条设置距离
     }
   },
   computed: {
@@ -70,7 +100,13 @@ export default {
     // 这个位置 只有小智同学回复的时候才会调用
     this.socket.on('message', (data) => {
       this.list.push({ ...data, name: 'xz' }) // name:xz相当于 给我们的消息记录一下 谁发了这个消息
+      this.scrollBottom() // 接收消息的时候 也要设置 滚动条距离
     })
+  },
+  // 页面销毁之前的钩子函数
+  beforeDestroy () {
+    // 销毁页面
+    this.socket.close()
   }
 }
 </script>
