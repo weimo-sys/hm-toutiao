@@ -1,5 +1,6 @@
 <template>
-  <div class="scroll-wrapper">
+<!-- 阅读记忆 @scroll="remember" -->
+  <div ref="myScroll" class="scroll-wrapper" @scroll="remember">
     <van-pull-refresh v-model="downLoading" :success-text="refreshSuccessText" @refresh="onRefresh">
       <van-list
         v-model="upLoading"
@@ -55,7 +56,8 @@ export default {
       finished: false, // 是否全部加载完成
       articles: [], // 定义一个数组来接收上拉加载的数据
       refreshSuccessText: '', // 下拉成功显示的文本
-      timestamp: null // 定义一个时间戳，这个时间戳用来告诉服务器，现在要求什么样的事件数据
+      timestamp: null, // 定义一个时间戳，这个时间戳用来告诉服务器，现在要求什么样的事件数据
+      scrollTop: 0 // 记录当前文章列表实例所滚动的位置
     }
   },
   props: {
@@ -71,6 +73,7 @@ export default {
   },
   created () {
     // 开启监听
+    // 监听删除文章事件
     eventBus.$on('delArticle', (articleId, channelId) => {
       if (this.channel_id === channelId) {
         // 这个条件表示 该列表就是当前激活的列表
@@ -81,8 +84,28 @@ export default {
         }
       }
     })
+    // 开启新的监听
+    eventBus.$on('changeTab', id => {
+      // 判断id 是否等于 该组件通过props得到的频道id
+      if (id === this.channel_id) {
+        // 如果相等 说明找对了article-list实例
+        this.$nextTick(() => {
+          if (this.scrollTop && this.$refs.myScroll) {
+          // 表示该文章列表存在滚动
+            this.$refs.myScroll.scrollTop = this.scrollTop
+          }
+        })
+      }
+    })
   },
   methods: {
+    // 定义一个记录位置的方法
+    // 当绑定事件只写方法名时 第一个参数就是event
+    remember (event) {
+      // 记录此次滚动事件中，滚动条距离顶部的高度
+      // event.target 当前触发事件的元素
+      this.scrollTop = event.target.scrollTop // 记录位置
+    },
     // 上拉加载
     async onLoad () {
       await this.$sleep() // 等待 sleep resolve
@@ -149,6 +172,15 @@ export default {
         // 如果长度<0 表示没有新数据
         this.refreshSuccessText = '已是最新数据'
       }
+    }
+  },
+  // 激活函数
+  activated () {
+    // console.log('我被唤醒了')
+    // 唤醒的时候，需要把记录的位置 恢复回去
+    if (this.$refs.myScroll && this.scrollTop) {
+      // 当dom元素存在 且 滚动距离不为0 才去滚动
+      this.$refs.myScroll.scrollTop = this.scrollTop // 将原来记录的位置复制给dom元素
     }
   }
 }

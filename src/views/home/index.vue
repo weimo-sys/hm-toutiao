@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <van-tabs v-model="activeIndex" swipeable>
+    <!-- 监听tabs 切换事件 -->
+    <van-tabs v-model="activeIndex" swipeable @change="changeTab">
       <van-tab :title="channel.name" v-for="channel in channels" :key="channel.id">
         <!-- 这个div 设置了滚动条 -->
         <!-- 在父组件的子组件标签上写监听 -->
@@ -58,6 +59,14 @@ export default {
     ArticleList, MoreAction, ChannelEdit
   },
   methods: {
+    // 当切换tab页时会触发
+    changeTab () {
+      // 通知所有的article-list实例 告诉他们 切换页签了 把切换的页签传过去
+      // article-list组件 拿到页签 看看是否时自己所在的页签
+      // 如果是：就判断自己的组件是否有滚动， 如果有滚动数据，就滚动到对应位置
+      // 触发一个滚动事件
+      eventBus.$emit('changeTab', this.channels[this.activeIndex].id)
+    },
     // 添加频道
     async addChannel (channel) {
       await addChannel(channel) // 完成写入本地缓存的操作 只是写入缓存

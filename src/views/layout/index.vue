@@ -3,7 +3,11 @@
     <van-nav-bar v-if="showNavBar" title="黑马头条" right-text="搜索" @click-right="$router.push('/search')" fixed></van-nav-bar>
     <!-- 二级路由容器  首页/问答/视频/我的-->
     <div class="my-wrapper" :class="{ noTop: !showNavBar }">
-      <router-view></router-view>
+      <!-- 如果想要缓存二级路由组件 可以直接缓存二级路由容器，这个路由组件下面的组件都会被缓存-->
+      <keep-alive>
+        <!-- 用keep-alive 包裹二级路由容器 -->
+        <router-view></router-view>
+      </keep-alive>
     </div>
     <!-- 标签栏 开启路由模式 route :route = 'true' -->
     <van-tabbar route>
